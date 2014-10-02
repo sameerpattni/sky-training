@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><Graph __version="3.5.0" author="sameerpattni" created="Mon Sep 15 17:25:34 BST 2014" description="List&lt;Account&gt; To CSV" guiVersion="3.4.4.P" id="1410878919996" licenseCode="Unlicensed" licenseType="Unknown" modified="Mon Sep 15 17:25:34 BST 2014" modifiedBy="sameerpattni" name="List_Account__To_CSV" revision="1.0" showComponentDetails="false">
+<Global>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/Account" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _type="Input" id="6cf07f72-fb9b-42b8-bc4a-6914c17a765b">
+<Record fieldDelimiter="," name="Account" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __implementationClass="java.lang.String" __index="3" __sourcePath="{}/Account/BillingCity" containerType="SINGLE" label="BillingCity" name="BillingCity" type="string"/>
+<Field __implementationClass="java.lang.String" __index="2" __sourcePath="{}/Account/BillingCountry" containerType="SINGLE" label="BillingCountry" name="BillingCountry" type="string"/>
+<Field __implementationClass="java.lang.Double" __index="6" __sourcePath="{}/Account/BillingLatitude" containerType="SINGLE" label="BillingLatitude" name="BillingLatitude" type="number"/>
+<Field __implementationClass="java.lang.Double" __index="1" __sourcePath="{}/Account/BillingLongitude" containerType="SINGLE" label="BillingLongitude" name="BillingLongitude" type="number"/>
+<Field __implementationClass="java.lang.String" __index="4" __sourcePath="{}/Account/BillingPostalCode" containerType="SINGLE" label="BillingPostalCode" name="BillingPostalCode" type="string"/>
+<Field __implementationClass="java.lang.String" __index="7" __sourcePath="{}/Account/BillingState" containerType="SINGLE" label="BillingState" name="BillingState" type="string"/>
+<Field __implementationClass="java.lang.String" __index="5" __sourcePath="{}/Account/BillingStreet" containerType="SINGLE" label="BillingStreet" name="BillingStreet" type="string"/>
+<Field __implementationClass="java.lang.String" __index="0" __sourcePath="{}/Account/Name" containerType="SINGLE" label="Name" name="Name" type="string"/>
+</Record>
+</Metadata>
+<Metadata __referenceCounter="1" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _type="Output" id="38568ee4-8ebd-4bbf-87bf-765bb4d5acad">
+<Record fieldDelimiter="," name="Account" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field containerType="SINGLE" label="BillingCity" name="BillingCity" size="10" type="string"/>
+<Field containerType="SINGLE" label="BillingCountry" name="BillingCountry" size="10" type="string"/>
+<Field containerType="SINGLE" label="BillingLatitude" name="BillingLatitude" size="10" type="number"/>
+<Field containerType="SINGLE" label="BillingLongitude" name="BillingLongitude" size="10" type="number"/>
+<Field containerType="SINGLE" label="BillingPostalCode" name="BillingPostalCode" size="10" type="string"/>
+<Field containerType="SINGLE" label="BillingState" name="BillingState" size="10" type="string"/>
+<Field containerType="SINGLE" label="BillingStreet" name="BillingStreet" size="10" type="string"/>
+<Field containerType="SINGLE" eofAsDelimiter="true" label="Name" name="Name" size="10" type="string"/>
+<Field __artificialType="_id" name="__id" type="long"/>
+</Record>
+</Metadata>
+<Dictionary>
+<Entry id="DictionaryEntry0" input="true" name="inputPayload" output="false" type="object"/>
+<Entry id="DictionaryEntry1" input="false" name="outputPayload" output="true" type="object"/>
+</Dictionary>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" fileURL="dict:inputPayload" guiName="Map&lt;k,v&gt; READER" guiX="20" guiY="20" id="BEAN_READER0" type="BEAN_READER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context outPort="0" sequenceField="__id" xpath=".">
+  <Mapping cloverField="BillingCity" trim="true" xpath="BillingCity"/>
+  <Mapping cloverField="BillingCountry" trim="true" xpath="BillingCountry"/>
+  <Mapping cloverField="BillingLatitude" trim="true" xpath="BillingLatitude"/>
+  <Mapping cloverField="BillingLongitude" trim="true" xpath="BillingLongitude"/>
+  <Mapping cloverField="BillingPostalCode" trim="true" xpath="BillingPostalCode"/>
+  <Mapping cloverField="BillingState" trim="true" xpath="BillingState"/>
+  <Mapping cloverField="BillingStreet" trim="true" xpath="BillingStreet"/>
+  <Mapping cloverField="Name" trim="true" xpath="Name"/>
+</Context>
+]]></attr>
+<attr name="_data_format"><![CDATA[MAP]]></attr>
+<attr name="__metadata"><![CDATA[true]]></attr>
+</Node>
+<Node charset="UTF-8" enabled="enabled" excludeFields="__id" fileURL="dict:outputPayload" guiName="CSV WRITER" guiX="900" guiY="20" id="DATA_WRITER0" quotedStrings="true" type="DATA_WRITER">
+<attr name="_data_format"><![CDATA[CSV]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Foreach 'Account' -&gt; 'Account'" guiX="460" guiY="20" id="FOREACH_ACCOUNT_ACCOUNT" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = str2long(input.__id);
+//END -> DO NOT REMOVE
+output.BillingCity = input.BillingCity;
+output.BillingCountry = input.BillingCountry;
+output.BillingLatitude = input.BillingLatitude;
+output.BillingLongitude = input.BillingLongitude;
+output.BillingPostalCode = input.BillingPostalCode;
+output.BillingState = input.BillingState;
+output.BillingStreet = input.BillingStreet;
+output.Name = input.Name;
+]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="BEAN_READER0:0" guiBendpoints="" id="Edge0" inPort="Port 0 (in)" metadata="6cf07f72-fb9b-42b8-bc4a-6914c17a765b" outPort="Port 0 (out)" toNode="FOREACH_ACCOUNT_ACCOUNT:0"/>
+<Edge debugMode="true" fromNode="FOREACH_ACCOUNT_ACCOUNT:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="38568ee4-8ebd-4bbf-87bf-765bb4d5acad" outPort="Port 0 (out)" toNode="DATA_WRITER0:0"/>
+</Phase>
+</Graph>

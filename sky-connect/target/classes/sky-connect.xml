@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <sfdc:config name="Salesforce" username="sameerpattni@yahoo.co.uk" password="Krishan@2014" doc:name="Salesforce" securityToken="HjZ1dnRagrM7AkxY1yrWrn8Y"/>
+    <data-mapper:config name="List_Account__To_CSV" transformationGraphPath="list_account__to_csv.grf" doc:name="List_Account__To_CSV"/>
+    <sfdc:config name="Salesforce1" username="sameerpattni@yahoo.co.uk" password="Krishan@2014" securityToken="HjZ1dnRagrM7AkxY1yrWrn8Y" doc:name="Salesforce"/>
+    <flow name="sky-connectFlow1" doc:name="sky-connectFlow1" doc:description="xxxxx">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="sfdc" doc:name="HTTP"/>
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties[&quot;postalcode&quot;]==null]">
+                <sfdc:query config-ref="Salesforce1" query="dsql:SELECT BillingAddress,BillingCity,BillingCountry,BillingPostalCode,BillingState,BillingStreet FROM Account" doc:name="Salesforce ALL"/>
+            </when>
+            <otherwise>
+                <sfdc:query config-ref="Salesforce1" query="dsql:SELECT BillingCity,BillingCountry,BillingPostalCode,BillingState,BillingStreet,Name FROM Account WHERE BillingPostalCode = '#[message.inboundProperties[&quot;postalcode&quot;]]'" doc:name="Salesforce Parameter"/>
+            </otherwise>
+        </choice>
+        <data-mapper:transform config-ref="List_Account__To_CSV" doc:name="List&lt;Account&gt; To CSV"/>
+        <file:outbound-endpoint path="/Users/sameerpattni/AnypointStudio/workspace/sky-connect/src/main/resources" outputPattern="output.csv" responseTimeout="10000" doc:name="File"/>
+        <http:response-builder contentType="text/plain" doc:name="HTTP Response Builder"/>
+    </flow>
+</mule>
