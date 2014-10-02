@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <db:mysql-config name="MySQL_Configuration" host="ec2-54-81-22-148.compute-1.amazonaws.com" port="3306" user="MuleReader" password="learnmule" database="MuleTrainingCHE" doc:name="MySQL Configuration">
+        <db:pooling-profile maxPoolSize="8" minPoolSize="4"/>
+    </db:mysql-config>
+    <data-mapper:config name="List_Map__To_List_Account_" transformationGraphPath="list_map__to_list_account_.grf" doc:name="List_Map__To_List_Account_"/>
+    <flow name="csv2sfdcFlow1" doc:name="csv2sfdcFlow1" processingStrategy="synchronous">
+        <poll doc:name="Poll">
+            <fixed-frequency-scheduler frequency="3" startDelay="3" timeUnit="SECONDS"/>
+            <watermark variable="watermark" default-expression="0" selector="LAST" selector-expression="#[payload['accountID']]"/>
+            <db:select config-ref="MySQL_Configuration" doc:name="Database">
+                <db:parameterized-query><![CDATA[SELECT accountID, Name, Street, City, Country, State, Postal
+FROM Account
+WHERE accountID > #[flowVars['watermark']] AND 
+postal = '200408']]></db:parameterized-query>
+            </db:select>
+        </poll>
+        <data-mapper:transform config-ref="List_Map__To_List_Account_" doc:name="List&lt;Map&gt; To List&lt;Account&gt;"/>
+        <sfdc:create config-ref="Salesforce" type="Account" doc:name="Salesforce">
+            <sfdc:objects ref="#[payload]"/>
+        </sfdc:create>
+    </flow>
+</mule>
